@@ -4,9 +4,7 @@ import { getJSON, makeConfig, makeUrl, postJSON } from './utils'
 
 const Pkg = require('../package.json')
 
-import fetch from "node-fetch";
-
-function CheklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
+function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
   const seneca: any = this
 
   const entityBuilder = this.export('provider/entityBuilder')
@@ -18,6 +16,7 @@ function CheklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
       ok: true,
       name: 'checklyhq',
       version: Pkg.version,
+      mark: 'checklyhq-provider',
     }
   }
 
@@ -48,10 +47,11 @@ function CheklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
           save: {
             action: async function(this: any, entize: any, msg: any) {
               const body = this.util.deep(
-                this.shared.primary,
                 options.entity.checks.save,
                 msg.ent.data$(false)
-              )
+                )
+              console.log(options)
+              console.log(body)
 
               const res: any = await postJSON(makeUrl('checks/api', msg.q, options), makeConfig(this,{
                 body
@@ -82,9 +82,9 @@ function CheklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
       "X-Checkly-Account": res.keymap.account.value
     }
 
-    this.shared.primary = { 
-      name: res.keymap.checkname.value,
-    }
+    // this.shared.primary = { 
+    //   name: res.keymap.checkname.value,
+    // }
 
   })
 
@@ -122,10 +122,10 @@ const defaults: ChecklyhqProviderOptions = {
 }
 
 
-Object.assign(CheklyhqProvider, { defaults })
+Object.assign(ChecklyhqProvider, { defaults })
 
-export default CheklyhqProvider
+export default ChecklyhqProvider
 
 if ('undefined' !== typeof (module)) {
-  module.exports = CheklyhqProvider
+  module.exports = ChecklyhqProvider
 }

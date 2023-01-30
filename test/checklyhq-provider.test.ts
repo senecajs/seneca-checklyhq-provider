@@ -94,6 +94,7 @@ async function makeSeneca() {
       file: [__dirname + '/local-env.js;?'],
       var: {
         $CHECKLYHQ_TOKEN: String,
+        $CHECKLYHQ_ACCID: String,
       }
     })
     .use('provider', {
@@ -101,8 +102,8 @@ async function makeSeneca() {
         checklyhq: {
           keys: {
             token: { value: ENV.CHECKLYHQ_TOKEN },
-            checkname: { value: CONFIG.CHECKLYHQ_CHECK_NAME },
-            account: { value: CONFIG.CHECKLYHQ_ACC }
+            check_id: { value: CONFIG.CHECKLYHQ_CHECK_ID },
+            account_id: { value: ENV.CHECKLYHQ_ACCID }
           }
         }
       }

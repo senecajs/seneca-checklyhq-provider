@@ -36,16 +36,16 @@ Seneca()
   // Get API keys using the seneca-env plugin
   .use('env', {
     var: {
-      $CHECKLYHQ_APIKEY: String,
-      $CHECKLYHQ_USERTOKEN: String,
+      $CHECKLYHQ_TOKEN: String,
+      $CHECKLYHQ_ACCID: String,
     }
   })
   .use('provider', {
     provider: {
       checklyhq: {
         keys: {
-          apikey: { value: '$CHECKLYHQ_APIKEY' },
-          usertoken: { value: '$CHECKLYHQ_USERTOKEN' },
+          token: { value: '$CHECKLYHQ_TOKEN' },
+          account_id: { value: '$CHECKLYHQ_ACCID' },
         }
       }
     }
