@@ -114,16 +114,22 @@ seneca.use('ChecklyhqProvider', { name: value, ... })
 
 ## Action Descriptions
 
+### &laquo; `role:entity,base:checklyhq,cmd:list,name:repo,zone:provider` &raquo;
+
+List Checklyhq repository data into an entity.
+
 ### &laquo; `role:entity,base:checklyhq,cmd:load,name:repo,zone:provider` &raquo;
 
 Load Checklyhq repository data into an entity.
 
-
-
-----------
 ### &laquo; `role:entity,base:checklyhq,cmd:save,name:repo,zone:provider` &raquo;
 
-Update Checklyhq repository data from an entity.
+Update Checklyhq repository data into an entity.
+
+----------
+### &laquo; `role:entity,base:checklyhq,cmd:remove,name:repo,zone:provider` &raquo;
+
+Remove Checklyhq repository data from an entity.
 
 
 
