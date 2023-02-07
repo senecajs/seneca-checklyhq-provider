@@ -63,21 +63,29 @@ describe('checklyhq-provider', () => {
 
     const seneca = await makeSeneca()
 
-    const load = await seneca.entity("provider/checklyhq/checks").load$({apiCheckUrlFilterPattern : CONFIG.CHECKLYHQ_CHECK_NAME})
+    const load = await seneca.entity("provider/checklyhq/checks").load$(CONFIG.CHECKLYHQ_CHECK_ID)
     expect(null == load).toBeFalsy()
 
   })
 
-  // IMPORTANT: This test creates a real project on checklyhq. There is no SandBox on checklyhq (2022-01-25).
-  test('checks-basic-save', async () => {
+  test('checks-basic-save-remove', async () => {
     if (!ENV) return;
     if (!CONFIG) return;
 
     const seneca = await makeSeneca()
 
-    const save = await seneca.entity("provider/checklyhq/check").save$(CONFIG.CHECKLYHQ_PROJECT_NAME)
-    console.log(save)
+    const senecaEntity = await seneca.entity("provider/checklyhq/checks")
+
+    //These three properties are required to create a check
+    senecaEntity.name = CONFIG.CHECKLYHQ_CHECK_NAME
+    senecaEntity.request = CONFIG.CHECKLYHQ_CHECK_REQUEST
+    senecaEntity.locations = CONFIG.CHECKLYHQ_CHECK_LOCATIONS
+
+    const save = await senecaEntity.save$()
     expect(save.id).toBeDefined()
+
+    const remove = await seneca.entity("provider/checklyhq/checks").remove$(save.id)
+    expect(remove.type === 'invalid-json').toBeTruthy()
 
   })
 
@@ -102,8 +110,7 @@ async function makeSeneca() {
         checklyhq: {
           keys: {
             token: { value: ENV.CHECKLYHQ_TOKEN },
-            check_id: { value: CONFIG.CHECKLYHQ_CHECK_ID },
-            account_id: { value: ENV.CHECKLYHQ_ACCID }
+            account_id: { value: ENV.CHECKLYHQ_ACCID },
           }
         }
       }
