@@ -1,6 +1,4 @@
 module.exports = {
-  TANGOCARD_NAME: '<NAME>',
-  TANGOCARD_KEY: '<KEY>',
-  TANGOCARD_CUSTID: '<customerIdentifier>',
-  TANGOCARD_ACCID: '<accountIdentifier>',
+  CHECKLYHQ_TOKEN: "<CHECKLYHQ_TOKEN>",
+  CHECKLYHQ_ACCID: "<CHECKLYHQ_ACCID>",
 }

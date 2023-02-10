@@ -13,8 +13,7 @@ jobs:
   build:
     environment: test
     env:
-      TRELLO_APIKEY: ${{secrets.TRELLO_APIKEY}}
-      TRELLO_USERTOKEN: ${{secrets.TRELLO_USERTOKEN}}
+      CHECKLYHQ_TOKEN: ${{secrets.CHECKLYHQ_TOKEN}}
       
     timeout-minutes: 6
 
