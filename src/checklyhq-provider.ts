@@ -4,23 +4,32 @@ import fetch from "node-fetch";
 const Pkg = require("../package.json");
 
 type ChecklyhqProviderOptions = {
-  url: string
-  fetch?: any
-  debug: boolean
-}
+  url: string;
+  fetch?: any;
+  debug: boolean;
+};
 
 function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
   const seneca: any = this;
 
-  const entityBuilder = this.export("provider/entityBuilder");
+  const makeUtils = this.export("provider/makeUtils");
 
-  const makeUrl = this.export("provider/makeUrl");
-  const makeConfig = this.export("provider/makeConfig");
-  const getJSON = this.export("provider/getJSON");
-  const postJSON = this.export("provider/postJSON");
-  const deleteJSON = this.export("provider/deleteJSON");
+  const { makeUrl, getJSON, postJSON, deleteJSON, entityBuilder } = makeUtils({
+    name: "checklyhq",
+    url: options.url,
+  });
 
   seneca.message("sys:provider,provider:checklyhq,get:info", get_info);
+
+  const makeConfig = (config?: any) =>
+    seneca.util.deep(
+      {
+        headers: {
+          ...seneca.shared.headers,
+        },
+      },
+      config
+    );
 
   async function get_info(this: any, _msg: any) {
     return {
@@ -40,8 +49,8 @@ function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
         cmd: {
           list: {
             action: async function (this: any, entize: any, msg: any) {
-              const res: any = await getJSON(makeUrl("checks", msg.q, options), options, makeConfig(this));
-              const checks = [...res]
+              const res: any = await getJSON(makeUrl("checks", msg.q), makeConfig());
+              const checks = [...res];
               const list = checks.map((data: any) => entize(data));
 
               return list;
@@ -49,7 +58,7 @@ function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
           },
           load: {
             action: async function (this: any, entize: any, msg: any) {
-              const res: any = await getJSON(makeUrl("checks", msg.q.id, options), options, makeConfig(this));
+              const res: any = await getJSON(makeUrl("checks", msg.q.id), makeConfig());
               const load = res ? entize(res) : null;
 
               return load;
@@ -59,15 +68,7 @@ function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
             action: async function (this: any, entize: any, msg: any) {
               //These three properties are required to create a check
               const body = { name: msg.ent.name, request: msg.ent.request, locations: msg.ent.locations };
-
-              const res: any = await postJSON(
-                makeUrl("checks/api", msg.q, options),
-                options,
-                makeConfig(this, {
-                  body,
-                }),
-              );
-
+              const res: any = await postJSON(makeUrl("checks/api", msg.q), makeConfig({ body }));
               const save = res ? entize(res) : null;
 
               return entize(save);
@@ -75,12 +76,12 @@ function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
           },
           remove: {
             action: async function (this: any, entize: any, msg: any) {
-              const res : any = await deleteJSON( makeUrl("checks", msg.q.id, options), options, makeConfig(this))
+              const res: any = await deleteJSON(makeUrl("checks", msg.q.id), makeConfig());
               const remove = res ? entize(res) : null;
 
               return entize(remove);
-            }
-          }
+            },
+          },
         },
       },
     },
@@ -104,7 +105,7 @@ function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
 
 // Default options.
 const defaults: ChecklyhqProviderOptions = {
-  // Vercel checks API Endpoint /
+  // Checkly checks API Endpoint /
   url: "https://api.checklyhq.com/v1/",
 
   // Use global fetch by default - if exists
