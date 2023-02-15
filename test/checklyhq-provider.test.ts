@@ -48,7 +48,7 @@ describe('checklyhq-provider', () => {
 
 
   test('checks-basic-list', async () => {
-    if (!ENV) return;
+    if (!ENV) return
 
     const seneca = await makeSeneca()
 
@@ -58,8 +58,8 @@ describe('checklyhq-provider', () => {
   })
 
   test('checks-basic-load', async () => {
-    if (!ENV) return;
-    if (!CONFIG) return;
+    if (!ENV) return
+    if (!CONFIG) return
 
     const seneca = await makeSeneca()
 
@@ -69,8 +69,8 @@ describe('checklyhq-provider', () => {
   })
 
   test('checks-basic-save-remove', async () => {
-    if (!ENV) return;
-    if (!CONFIG) return;
+    if (!ENV) return
+    if (!CONFIG) return
 
     const seneca = await makeSeneca()
 

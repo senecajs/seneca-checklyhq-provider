@@ -1,25 +1,25 @@
 /* Copyright © 2022 Seneca Project Contributors, MIT License. */
-import fetch from "node-fetch";
+import fetch from "node-fetch"
 
-const Pkg = require("../package.json");
+const Pkg = require("../package.json")
 
 type ChecklyhqProviderOptions = {
-  url: string;
-  fetch?: any;
-  debug: boolean;
-};
+  url: string
+  fetch?: any
+  debug: boolean
+}
 
 function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
-  const seneca: any = this;
+  const seneca: any = this
 
-  const makeUtils = this.export("provider/makeUtils");
+  const makeUtils = this.export("provider/makeUtils")
 
   const { makeUrl, getJSON, postJSON, deleteJSON, entityBuilder } = makeUtils({
     name: "checklyhq",
     url: options.url,
-  });
+  })
 
-  seneca.message("sys:provider,provider:checklyhq,get:info", get_info);
+  seneca.message("sys:provider,provider:checklyhq,get:info", get_info)
 
   const makeConfig = (config?: any) =>
     seneca.util.deep(
@@ -29,7 +29,7 @@ function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
         },
       },
       config
-    );
+    )
 
   async function get_info(this: any, _msg: any) {
     return {
@@ -37,7 +37,7 @@ function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
       name: "checklyhq",
       version: Pkg.version,
       mark: "checklyhq-provider",
-    };
+    }
   }
 
   entityBuilder(this, {
@@ -49,58 +49,58 @@ function ChecklyhqProvider(this: any, options: ChecklyhqProviderOptions) {
         cmd: {
           list: {
             action: async function (this: any, entize: any, msg: any) {
-              const res: any = await getJSON(makeUrl("checks", msg.q), makeConfig());
-              const checks = [...res];
-              const list = checks.map((data: any) => entize(data));
+              const res: any = await getJSON(makeUrl("checks", msg.q), makeConfig())
+              const checks = [...res]
+              const list = checks.map((data: any) => entize(data))
 
-              return list;
+              return list
             },
           },
           load: {
             action: async function (this: any, entize: any, msg: any) {
-              const res: any = await getJSON(makeUrl("checks", msg.q.id), makeConfig());
-              const load = res ? entize(res) : null;
+              const res: any = await getJSON(makeUrl("checks", msg.q.id), makeConfig())
+              const load = res ? entize(res) : null
 
-              return load;
+              return load
             },
           },
           save: {
             action: async function (this: any, entize: any, msg: any) {
               //These three properties are required to create a check
-              const body = { name: msg.ent.name, request: msg.ent.request, locations: msg.ent.locations };
-              const res: any = await postJSON(makeUrl("checks/api", msg.q), makeConfig({ body }));
-              const save = res ? entize(res) : null;
+              const body = { name: msg.ent.name, request: msg.ent.request, locations: msg.ent.locations }
+              const res: any = await postJSON(makeUrl("checks/api", msg.q), makeConfig({ body }))
+              const save = res ? entize(res) : null
 
-              return entize(save);
+              return entize(save)
             },
           },
           remove: {
             action: async function (this: any, entize: any, msg: any) {
-              const res: any = await deleteJSON(makeUrl("checks", msg.q.id), makeConfig());
-              const remove = res ? entize(res) : null;
+              const res: any = await deleteJSON(makeUrl("checks", msg.q.id), makeConfig())
+              const remove = res ? entize(res) : null
 
-              return entize(remove);
+              return entize(remove)
             },
           },
         },
       },
     },
-  });
+  })
 
   seneca.prepare(async function (this: any) {
-    let res = await this.post("sys:provider,get:keymap,provider:checklyhq");
+    let res = await this.post("sys:provider,get:keymap,provider:checklyhq")
 
     if (!res.ok) {
-      throw this.fail("keymap");
+      throw this.fail("keymap")
     }
 
-    const auth = res.keymap.token.value;
+    const auth = res.keymap.token.value
 
     this.shared.headers = {
       Authorization: "Bearer " + auth,
       "X-Checkly-Account": res.keymap.account_id.value,
-    };
-  });
+    }
+  })
 }
 
 // Default options.
@@ -113,12 +113,12 @@ const defaults: ChecklyhqProviderOptions = {
 
   // TODO: Enable debug logging
   debug: false,
-};
+}
 
-Object.assign(ChecklyhqProvider, { defaults });
+Object.assign(ChecklyhqProvider, { defaults })
 
-export default ChecklyhqProvider;
+export default ChecklyhqProvider
 
 if ("undefined" !== typeof module) {
-  module.exports = ChecklyhqProvider;
+  module.exports = ChecklyhqProvider
 }
